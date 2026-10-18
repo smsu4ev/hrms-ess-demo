@@ -1,0 +1,33 @@
+name: Extract app zip to root
+
+on:
+  push:
+    paths:
+      - hrms-ess-v2.zip
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unzip and copy contents to repo root
+        run: |
+          set -e
+          rm -rf /tmp/appzip
+          mkdir -p /tmp/appzip
+          unzip -o hrms-ess-v2.zip -d /tmp/appzip
+          SRC=/tmp/appzip
+          if [ -d /tmp/appzip/hrms-ess-v2 ]; then
+            SRC=/tmp/appzip/hrms-ess-v2
+          fi
+          cp -rf "$SRC"/. .
+          rm -rf /tmp/appzip
+          rm -f hrms-ess-v2.zip
+          rm -f .github/workflows/extract.yml
+      - name: Commit extracted files
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Extract hrms-ess-v2 app files to repo root"
