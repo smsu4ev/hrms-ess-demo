@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Employee {{ user.id }}{% endblock %}
+{% block content %}
+<h2>{{ user.name }} <span class="muted">({{ user.id }})</span></h2>
+<p><a class="btn small primary" href="{{ url_for('hrms.employee_edit', uid=user.id) }}">Edit</a>
+   <a class="btn small" href="{{ url_for('admin.user_detail', uid=user.id) }}">Account & Password</a></p>
+<div class="twocol">
+<div class="formcard">
+  <h3>Employee 360</h3>
+  <dl class="kv">
+    <dt>Designation</dt><dd>{{ user.designation or '-' }}</dd>
+    <dt>Department</dt><dd>{{ user.department or '-' }}</dd>
+    <dt>Reporting Manager</dt><dd>{% if manager %}{{ manager.name }} ({{ manager.id }}){% else %}{{ user.reporting_manager or '-' }}{% endif %}</dd>
+    <dt>Joining Date</dt><dd>{{ user.joining_date or '-' }}</dd>
+    <dt>Employment Status</dt><dd><span class="badge {{ user.employment_status }}">{{ user.employment_status }}</span></dd>
+    <dt>Nationality</dt><dd>{{ user.nationality or '-' }}</dd>
+    <dt>Visa Expiry</dt><dd>{{ user.visa_expiry_date or '-' }}</dd>
+    <dt>Passport Expiry</dt><dd>{{ user.passport_expiry_date or '-' }}</dd>
+    <dt>Email</dt><dd>{{ user.email or '-' }}</dd>
+    <dt>Mobile</dt><dd>{{ user.mobile or '-' }}</dd>
+    <dt>Basic / Monthly</dt><dd>{{ user.basic_salary }} / {{ user.monthly_salary }}</dd>
+    <dt>Role</dt><dd>{{ user.role }}</dd>
+    <dt>Account Active</dt><dd>{{ 'Yes' if user.is_active else 'No' }}</dd>
+    <dt>Present this month</dt><dd>{{ present_days }} days</dd>
+  </dl>
+</div>
+<div>
+<div class="formcard">
+  <h3>Leave Balances</h3>
+  <table class="tbl">
+    <tr><th>Type</th><th>Entitled</th><th>Used</th></tr>
+    {% for b in balances %}<tr><td>{{ b.leave_type|title }}</td><td>{{ b.entitled }}</td><td>{{ b.used }}</td></tr>
+    {% else %}<tr><td colspan="3" class="muted">None.</td></tr>{% endfor %}
+  </table>
+  <h3>Recent Leave Requests</h3>
+  <table class="tbl">
+    <tr><th>Type</th><th>Dates</th><th>Status</th></tr>
+    {% for l in leaves %}<tr><td>{{ l.leave_type }}</td><td>{{ l.start_date }} to {{ l.end_date }}</td>
+    <td><span class="badge {{ l.status }}">{{ l.status }}</span></td></tr>
+    {% else %}<tr><td colspan="3" class="muted">None.</td></tr>{% endfor %}
+  </table>
+</div>
+<div class="formcard">
+  <h3>Recent Changes (Audit)</h3>
+  <table class="tbl">
+    <tr><th>Time</th><th>Action</th><th>Field</th><th>Old</th><th>New</th><th>By</th></tr>
+    {% for l in logs %}
+    <tr><td>{{ l.created_at.strftime('%Y-%m-%d %H:%M') }}</td><td>{{ l.action }}</td>
+        <td>{{ l.field_name or '-' }}</td><td>{{ l.old_value or '' }}</td><td>{{ l.new_value or '' }}</td>
+        <td>{{ l.actor_id }}</td></tr>
+    {% else %}<tr><td colspan="6" class="muted">No changes recorded.</td></tr>{% endfor %}
+  </table>
+</div>
+</div>
+</div>
+{% endblock %}

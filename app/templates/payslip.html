@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Payslip{% endblock %}
+{% block content %}
+<div class="slip">
+<h2>Payslip - {{ slip.month_name }} {{ slip.year }}</h2>
+<p><strong>{{ current_user.name }}</strong> ({{ current_user.id }})<br>
+{{ current_user.designation }} - {{ current_user.department }}<br>
+{{ company_name }}</p>
+<table class="tbl">
+  <tr><th>Earnings</th><th class="r">Amount (AED)</th></tr>
+  {% for label, amt in slip.earnings %}
+  <tr><td>{{ label }}</td><td class="r">{{ "%.2f"|format(amt) }}</td></tr>
+  {% endfor %}
+  <tr class="total"><td>Gross Earnings</td><td class="r">{{ "%.2f"|format(slip.gross) }}</td></tr>
+</table>
+<table class="tbl">
+  <tr><th>Deductions</th><th class="r">Amount (AED)</th></tr>
+  {% for label, amt in slip.deductions %}
+  <tr><td>{{ label }}</td><td class="r">{{ "%.2f"|format(amt) }}</td></tr>
+  {% endfor %}
+  <tr class="total"><td>Net Pay</td><td class="r">{{ "%.2f"|format(slip.net) }}</td></tr>
+</table>
+<p class="muted">System generated - no signature required. Use your browser's Print function to save as PDF.</p>
+<button class="btn" onclick="window.print()">Print / Save PDF</button>
+</div>
+{% endblock %}

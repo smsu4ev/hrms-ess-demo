@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2>Welcome, {{ current_user.name }}</h2>
+<p class="muted">{{ current_user.designation }} - {{ current_user.department }} | ID: {{ current_user.id }}</p>
+<div class="cards">
+  <div class="card"><div class="num">{{ present_days }}</div><div class="lbl">Days present this month</div></div>
+  <div class="card"><div class="num">{{ pending_leaves }}</div><div class="lbl">Pending leave requests</div></div>
+  <div class="card"><div class="num">{{ open_grievances }}</div><div class="lbl">Open grievances</div></div>
+  {% if current_user.is_manager %}
+  <div class="card warn"><div class="num">{{ approvals_pending }}</div><div class="lbl">Approvals waiting</div></div>
+  {% endif %}
+  {% if current_user.is_admin and expiring_docs %}
+  <div class="card danger-card"><div class="num">{{ expiring_docs|length }}</div><div class="lbl">Documents expiring soon</div></div>
+  {% endif %}
+</div>
+{% if current_user.is_admin and expiring_docs %}
+<h3>Visa / Passport Expiries (next 30 days)</h3>
+<table class="tbl">
+  <tr><th>Employee</th><th>Document</th><th>Expiry Date</th><th>Days Left</th></tr>
+  {% for e in expiring_docs %}
+  <tr>
+    <td><a href="{{ url_for('hrms.employee_detail', uid=e.user.id) }}">{{ e.user.name }} ({{ e.user.id }})</a></td>
+    <td>{{ e.doc|title }}</td><td>{{ e.date }}</td>
+    <td><span class="badge {% if e.days_left < 0 %}rejected{% elif e.days_left <= 10 %}pending{% else %}late{% endif %}">{{ e.days_left }} days</span></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+<h3>Leave Balances</h3>
+<table class="tbl">
+  <tr><th>Leave Type</th><th>Entitled</th><th>Used</th><th>Remaining</th></tr>
+  {% for b in balances %}
+  <tr><td>{{ b.leave_type|title }}</td><td>{{ b.entitled }}</td><td>{{ b.used }}</td><td>{{ b.entitled - b.used }}</td></tr>
+  {% else %}
+  <tr><td colspan="4" class="muted">No balances set up yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

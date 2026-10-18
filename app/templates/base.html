@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}HRMS{% endblock %} - {{ company_name }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+{% if current_user.is_authenticated %}
+<header class="topbar">
+  <div class="brand"><span class="logo-dot"></span>{{ company_name }} <span class="trade">{{ trade_name }}</span></div>
+  <div class="userbox">
+    <span class="uname">{{ current_user.name }} <span class="uid">({{ current_user.id }})</span></span>
+    <span class="badge {{ current_user.role }}">{{ current_user.role }}</span>
+    <a class="btn small ghost" href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+</header>
+<div class="layout">
+  <nav class="sidebar">
+    <a href="{{ url_for('views.dashboard') }}">&#9729; Dashboard</a>
+    <a href="{{ url_for('views.leave') }}">&#128197; Leave</a>
+    <a href="{{ url_for('views.attendance') }}">&#128336; Attendance</a>
+    <a href="{{ url_for('views.regularisation') }}">&#9998; Regularisation</a>
+    <a href="{{ url_for('views.payslips') }}">&#128179; Payslips</a>
+    <a href="{{ url_for('views.grievances') }}">&#128172; Grievances</a>
+    <a href="{{ url_for('views.evaluations') }}">&#9733; My Evaluations</a>
+    <a href="{{ url_for('views.profile') }}">&#128100; My Profile</a>
+    {% if current_user.is_manager %}
+    <div class="navhead">Manager</div>
+    <a href="{{ url_for('views.approvals') }}">Leave Approvals</a>
+    <a href="{{ url_for('views.regularisation_approvals') }}">Regularisation Approvals</a>
+    <a href="{{ url_for('views.evaluations_manage') }}">Evaluations</a>
+    <a href="{{ url_for('views.grievance_inbox') }}">Grievance Inbox</a>
+    {% endif %}
+    {% if current_user.is_admin %}
+    <div class="navhead">HRMS Admin</div>
+    <a href="{{ url_for('hrms.employees') }}">Employee Central</a>
+    <a href="{{ url_for('hrms.recruitment') }}">Recruitment</a>
+    <a href="{{ url_for('hrms.onboarding') }}">Onboarding</a>
+    <a href="{{ url_for('admin.users') }}">Manage Users</a>
+    <a href="{{ url_for('admin.audit') }}">Audit Log</a>
+    <a href="{{ url_for('admin.attendance_import') }}">Import Attendance</a>
+    {% endif %}
+  </nav>
+  <main class="content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+        <div class="flash {{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% else %}
+<main class="authpage">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for cat, msg in messages %}
+      <div class="flash {{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  {% block auth %}{% endblock %}
+</main>
+{% endif %}
+</body>
+</html>
