@@ -16,8 +16,11 @@ services:
         generateValue: true
       - key: ESS_COOKIE_SECURE
         value: "1"
+      # Free sample only: auto-create the fake demo users on startup
+      # (Render free has no Shell). NEVER set this on production.
+      - key: ESS_SEED_DEMO
+        value: "1"
       - key: PYTHON_VERSION
         value: "3.12.0"
-    # After the first deploy, open a Render Shell and run:
-    #   python seed_demo.py
-    # then log in as HRADMIN / Demo@123
+    # Demo users are auto-created on startup (ESS_SEED_DEMO=1 above),
+    # because Render free has no Shell. Log in as HRADMIN / Demo@123

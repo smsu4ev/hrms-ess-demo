@@ -74,5 +74,13 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        # Free-sample mode only: auto-create fake demo users on startup
+        # (hosts like Render free have no shell to run seed_demo.py).
+        if os.environ.get("ESS_SEED_DEMO") == "1":
+            try:
+                from app.demo_seed import ensure_demo_users
+                ensure_demo_users()
+            except Exception:
+                app.logger.exception("Demo seed failed")
 
     return app
