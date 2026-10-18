@@ -21,7 +21,7 @@
 </div>
 <div>
 <h3>Submitted</h3>
-<table class="tbl">
+<div class="tbl-wrap"><table class="tbl">
   <tr><th>#</th><th>Subject</th><th>Category</th><th>Status</th><th></th></tr>
   {% for g in items %}
   <tr><td>{{ g.id }}</td><td>{{ g.subject }}</td><td>{{ g.category }}</td>
@@ -30,7 +30,7 @@
   {% else %}
   <tr><td colspan="5" class="muted">No grievances submitted.</td></tr>
   {% endfor %}
-</table>
+</table></div>
 </div>
 </div>
 {% endblock %}

@@ -27,11 +27,37 @@ CONFIG = {
 COMPANY_NAME = "Al-Ameen Industries LLC"
 TRADE_NAME = "800 Retail - Retail Solutions"
 
+# UAE Labour Law (Federal Decree-Law 33/2021) leave entitlements.
+# The "note" is shown on the leave page; "entitled" drives the balance checks.
 LEAVE_TYPES = {
-    "annual": {"label": "Annual Leave", "entitled": 30},
-    "sick": {"label": "Sick Leave", "entitled": 15},
-    "emergency": {"label": "Emergency Leave", "entitled": 5},
-    "unpaid": {"label": "Unpaid Leave", "entitled": 0},
+    "annual": {
+        "label": "Annual Leave", "entitled": 30,
+        "note": "30 days per year after 1 year of service (Art. 29)."},
+    "sick": {
+        "label": "Sick Leave", "entitled": 90,
+        "note": "90 days per year (once probation passed): first 15 days full pay, "
+                "next 30 days half pay, remaining 45 days unpaid (Art. 31)."},
+    "maternity": {
+        "label": "Maternity Leave", "entitled": 60,
+        "note": "60 days: first 45 days full pay, next 15 days half pay (Art. 30)."},
+    "parental": {
+        "label": "Parental Leave", "entitled": 5,
+        "note": "5 working days for either parent, within 6 months of the child's birth (Art. 32)."},
+    "bereavement": {
+        "label": "Bereavement Leave", "entitled": 5,
+        "note": "5 days for death of a spouse; 3 days for death of a parent, child, "
+                "sibling, grandparent or grandchild (Cabinet Res. 1/2022, Art. 19)."},
+    "study": {
+        "label": "Study Leave", "entitled": 10,
+        "note": "10 days per year after 2 years' service, for study at a UAE-accredited "
+                "institution (Cabinet Res. 1/2022, Art. 18)."},
+    "hajj": {
+        "label": "Hajj Leave", "entitled": 30,
+        "note": "30 days unpaid, granted once during service, with proof of acceptance "
+                "from the Hajj authority (Cabinet Res. 1/2022, Art. 17)."},
+    "unpaid": {
+        "label": "Unpaid Leave", "entitled": 0,
+        "note": "Deducted from salary; granted at the company's discretion."},
 }
 
 GRIEVANCE_CATEGORIES = [

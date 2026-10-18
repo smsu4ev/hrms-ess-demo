@@ -116,7 +116,7 @@ check("audit filter page ok", r.status_code == 200 and b"Senior Engineer" in r.d
 
 # 5. Expiry widget: visa expiring in 10 days appears on admin dashboard
 r = client.get("/")
-check("expiry widget shows TST-EXP", b"TST-EXP" in r.data and b"Visa / Passport Expiries" in r.data)
+check("expiry widget shows TST-EXP", b"TST-EXP" in r.data and b"Expiries (next 30 days)" in r.data)
 
 # 6. Employee 360 detail page
 r = client.get("/hrms/employees/TST-NEW")

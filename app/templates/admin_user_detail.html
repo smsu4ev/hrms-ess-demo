@@ -49,19 +49,19 @@
 </div>
 
 <h3>Leave Balances</h3>
-<table class="tbl">
+<div class="tbl-wrap"><table class="tbl">
   <tr><th>Type</th><th>Entitled</th><th>Used</th></tr>
   {% for b in balances %}
   <tr><td>{{ b.leave_type|title }}</td><td>{{ b.entitled }}</td><td>{{ b.used }}</td></tr>
   {% else %}<tr><td colspan="3" class="muted">None.</td></tr>{% endfor %}
-</table>
+</table></div>
 
 <h3>Recent Activity</h3>
-<table class="tbl">
+<div class="tbl-wrap"><table class="tbl">
   <tr><th>Time</th><th>Action</th><th>Detail</th><th>IP</th></tr>
   {% for l in logs %}
   <tr><td>{{ l.created_at.strftime('%Y-%m-%d %H:%M') }}</td><td>{{ l.action }}</td>
       <td>{{ l.detail or '' }}</td><td>{{ l.ip or '' }}</td></tr>
   {% else %}<tr><td colspan="4" class="muted">None.</td></tr>{% endfor %}
-</table>
+</table></div>
 {% endblock %}

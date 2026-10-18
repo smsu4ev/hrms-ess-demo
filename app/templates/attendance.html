@@ -7,7 +7,7 @@
   <a class="btn small" href="{{ url_for('views.attendance') }}">This month</a>
   <a class="btn small" href="{{ url_for('views.attendance', y=next_m.year, m=next_m.month) }}">Next &rarr;</a>
 </div>
-<table class="tbl cal">
+<div class="tbl-wrap"><table class="tbl cal">
   <tr><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr>
   {% for week in weeks %}
   <tr>
@@ -26,5 +26,5 @@
     {% endfor %}
   </tr>
   {% endfor %}
-</table>
+</table></div>
 {% endblock %}

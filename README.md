@@ -1,24 +1,33 @@
-# HRMS + ESS v2 — Al-Ameen Industries LLC (800 Retail)
+# HRMS + ESS v2.1 — Al-Ameen Industries LLC (800 Retail)
 
 Full HRMS + Employee Self-Service web application. Employees log in with their
 **Employee ID**; the initial password is their **date of birth as DDMMYYYY**, and
 they must change it on first login. Roles: **employee / manager / admin (HR)**.
 
+The UI is mobile-first (responsive Argon-inspired desktop sidebar; slide-in drawer
++ bottom navigation on phones) and the ESS home screen is a SAP SuccessFactors-style
+tile grid. Leave types and the compliance pack follow **UAE Labour Law
+(Federal Decree-Law 33/2021)**.
+
 ## Modules
 
-**ESS (employee):** Dashboard · Leave (apply/approve/balances) ·
+**ESS (employee):** Dashboard (tile grid) · Leave (UAE law types, apply/approve/balances) ·
 Attendance (monthly view) · Attendance Regularisation (apply) · Payslips (view/print) ·
-Profile · Grievances (anonymous option) · Performance evaluations.
+Profile · My End-of-Service estimate · Grievances (anonymous option) · Performance evaluations.
 
 **MSS (manager):** Leave approvals (department-scoped) · Regularisation approvals ·
 Evaluation creation · Grievance inbox.
 
-**HRMS (HR admin):** Employee Central (list/search/filter, 360 view, add/edit) ·
+**HRMS (HR admin):** Employee Central (list/search/filter, 360 view, add/edit incl.
+Emirates ID expiry, IBAN, bank name) ·
+UAE Compliance Dashboard (60-day document expiries incl. Emirates ID, probation endings,
+gratuity liability, UAE leave policy, working-hours notes) ·
+End-of-Service Gratuity Calculator · WPS payroll CSV export ·
 Recruitment Tracker (Applied → Screening → Interview → Offer → Joined/Rejected) ·
 Onboarding Checklist (8 standard tasks, progress %) ·
-Advanced Audit Trail (filters + CSV export) ·
+Advanced Audit Trail (filters + CSV export; all employee-field edits audited) ·
 User management (password resets, roles, activate/deactivate) ·
-Attendance CSV import · Visa/Passport expiry widget (30 days) on dashboard.
+Attendance CSV import · Visa/Passport/Emirates-ID expiry widget (30 days) on dashboard.
 
 ## Quick start (test on your computer)
 

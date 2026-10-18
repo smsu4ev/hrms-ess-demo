@@ -25,7 +25,7 @@
     <button class="btn primary" type="submit">Add Candidate</button>
   </form>
 </div>
-<table class="tbl">
+<div class="tbl-wrap"><table class="tbl">
   <tr><th>ID</th><th>Name</th><th>Position</th><th>Phone</th><th>Source</th><th>Stage</th><th>Created</th></tr>
   {% for c in rows %}
   <tr>
@@ -36,5 +36,5 @@
     <td>{{ c.created_at.strftime('%Y-%m-%d') }}</td>
   </tr>
   {% else %}<tr><td colspan="7" class="muted">No candidates yet.</td></tr>{% endfor %}
-</table>
+</table></div>
 {% endblock %}

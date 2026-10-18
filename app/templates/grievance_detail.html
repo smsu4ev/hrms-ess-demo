@@ -2,7 +2,7 @@
 {% block title %}Grievance #{{ g.id }}{% endblock %}
 {% block content %}
 <h2>Grievance #{{ g.id }} - {{ g.subject }}</h2>
-<table class="tbl profile">
+<div class="tbl-wrap"><table class="tbl profile">
   <tr><th>Category</th><td>{{ g.category }}</td></tr>
   <tr><th>Status</th><td><span class="badge {{ g.status }}">{{ g.status.replace('_',' ') }}</span></td></tr>
   <tr><th>Submitted</th><td>{{ g.created_at.strftime('%Y-%m-%d %H:%M') }}</td></tr>
@@ -10,6 +10,6 @@
   {% if g.resolution %}
   <tr><th>Resolution</th><td>{{ g.resolution }}</td></tr>
   {% endif %}
-</table>
+</table></div>
 <a class="btn small" href="{{ url_for('views.grievances') }}">Back</a>
 {% endblock %}

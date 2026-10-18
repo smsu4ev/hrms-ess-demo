@@ -25,7 +25,7 @@
     <a class="btn small" href="{{ url_for('hrms.employee_new') }}">+ Add Employee</a>
   </form>
 </div>
-<table class="tbl">
+<div class="tbl-wrap"><table class="tbl">
   <tr><th>ID</th><th>Name</th><th>Designation</th><th>Department</th><th>Manager</th><th>Status</th><th>Visa Expiry</th><th>Passport Expiry</th></tr>
   {% for u in rows %}
   <tr>
@@ -36,5 +36,5 @@
     <td>{{ u.visa_expiry_date or '-' }}</td><td>{{ u.passport_expiry_date or '-' }}</td>
   </tr>
   {% else %}<tr><td colspan="8" class="muted">No employees found.</td></tr>{% endfor %}
-</table>
+</table></div>
 {% endblock %}

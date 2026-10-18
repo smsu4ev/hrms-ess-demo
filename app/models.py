@@ -20,8 +20,11 @@ class User(UserMixin, db.Model):
     nationality = db.Column(db.String(60))
     visa_expiry_date = db.Column(db.Date)
     passport_expiry_date = db.Column(db.Date)
+    emirates_id_expiry_date = db.Column(db.Date)  # v2.1 UAE compliance
     email = db.Column(db.String(120))
     mobile = db.Column(db.String(30))
+    iban = db.Column(db.String(60))      # v2.1 WPS payroll export
+    bank_name = db.Column(db.String(80))  # v2.1 WPS payroll export
     basic_salary = db.Column(db.Float, default=0.0)
     monthly_salary = db.Column(db.Float, default=0.0)
     password_hash = db.Column(db.String(255), nullable=False)

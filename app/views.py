@@ -187,7 +187,25 @@ def payslip(year, month):
 @views_bp.route("/profile")
 @login_required
 def profile():
-    return render_template("profile.html")
+    from app.uae import gratuity
+    est = None
+    if current_user.joining_date and (current_user.basic_salary or 0) > 0:
+        est = gratuity(current_user.joining_date, date.today(),
+                       current_user.basic_salary, "employer")
+    return render_template("profile.html", gratuity_est=est)
+
+
+# ---------------- My End-of-Service Estimate (employee) ----------------
+@views_bp.route("/gratuity")
+@login_required
+def my_gratuity():
+    """Employee-facing end-of-service estimate (employer-termination basis)."""
+    from app.uae import gratuity
+    est = None
+    if current_user.joining_date and (current_user.basic_salary or 0) > 0:
+        est = gratuity(current_user.joining_date, date.today(),
+                       current_user.basic_salary, "employer")
+    return render_template("my_gratuity.html", est=est)
 
 
 # ---------------- Grievances ----------------

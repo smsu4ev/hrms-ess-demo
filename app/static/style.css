@@ -85,7 +85,7 @@ h3 { color: var(--navy); margin: 20px 0 10px; font-weight: 600; }
 .btn.small { padding: 6px 12px; font-size: 12px; }
 .btn.wide { width: 100%; }
 .twocol { display: grid; grid-template-columns: 1fr 1.4fr; gap: 20px; }
-@media (max-width: 900px) { .twocol { grid-template-columns: 1fr; } .sidebar { display: none; } }
+@media (max-width: 900px) { .twocol { grid-template-columns: 1fr; } }
 .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: capitalize; }
 .badge.pending, .badge.submitted { background: #fef3c7; color: #92400e; }
 .badge.approved, .badge.resolved, .badge.done, .badge.present, .badge.admin { background: #d1fae5; color: #065f46; }
@@ -125,4 +125,104 @@ hr { border: none; border-top: 1px solid #e5e7eb; margin: 16px 0; }
 .taskrow.done .tasklabel { text-decoration: line-through; color: var(--muted); }
 .kv { display: grid; grid-template-columns: 190px 1fr; gap: 8px 14px; font-size: 14px; }
 .kv dt { color: var(--muted); font-weight: 600; }
-@media print { .topbar, .sidebar, .btn { display: none; } .content { max-width: 100%; } body { background: #fff; } }
+@media print { .topbar, .sidebar, .btn, .bottomnav, .hamburger { display: none; } .content { max-width: 100%; } body { background: #fff; } }
+
+/* ================= v2.1 - mobile-first responsive layer ================= */
+/* Hamburger: hidden on desktop */
+.hamburger { display: none; background: none; border: none; color: #fff; font-size: 24px;
+  cursor: pointer; padding: 10px 12px; min-width: 44px; min-height: 44px; line-height: 1; }
+.navscrim { display: none; }
+/* Sidebar nav spans (icon + text) */
+.nav-ico { display: inline-block; width: 26px; text-align: center; margin-right: 4px; }
+.bottomnav { display: none; }
+
+/* SuccessFactors-style quick-access tiles */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin: 16px 0 22px; }
+.tile { display: block; background: var(--card); border-radius: var(--radius); padding: 16px 14px;
+  box-shadow: 0 4px 14px rgba(50,50,93,.07); border: 1px solid #e9ecef; text-decoration: none;
+  color: var(--text); position: relative; }
+.tile:hover { border-color: var(--primary); box-shadow: 0 6px 18px rgba(94,114,228,.18); }
+.tile .t-ico { font-size: 26px; display: block; margin-bottom: 6px; }
+.tile .t-lbl { font-size: 13px; font-weight: 700; color: var(--navy); }
+.tile .t-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.tile .t-badge { position: absolute; top: 10px; right: 10px; background: var(--danger); color: #fff;
+  font-size: 11px; font-weight: 700; border-radius: 10px; padding: 2px 8px; min-width: 22px; text-align: center; }
+.tile.admin-tile { border-left: 4px solid var(--primary); }
+
+/* Horizontal-scroll wrapper for wide tables */
+.tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 10px 0 20px; border-radius: var(--radius); }
+.tbl-wrap .tbl { margin: 0; }
+
+/* Buttons/touch targets */
+.btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+.btn.small { min-height: 40px; }
+
+/* ================= Mobile (<=860px) ================= */
+@media (max-width: 860px) {
+  body { font-size: 15px; }
+  .topbar { padding: 8px 10px; gap: 8px; }
+  .hamburger { display: inline-block; }
+  .brand { font-size: 14px; }
+  .brand .trade { display: none; }
+  .brand-name { display: none; }
+  .userbox .uname { display: none; }
+  .userbox { gap: 8px; }
+  .content { padding: 14px 12px 92px; max-width: 100%; }  /* bottom space for the bottomnav */
+  h2 { font-size: 20px; }
+
+  /* Sidebar becomes a slide-in drawer */
+  .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 272px; max-width: 82vw; z-index: 1000;
+    transform: translateX(-105%); transition: transform .22s ease; overflow-y: auto;
+    padding-top: 14px; box-shadow: 6px 0 24px rgba(0,0,0,.25); }
+  body.nav-open .sidebar { transform: translateX(0); }
+  .sidebar a { padding: 13px 20px; font-size: 15px; min-height: 48px; display: flex; align-items: center; }
+  .navscrim { display: block; position: fixed; inset: 0; background: rgba(23,43,77,.5); z-index: 900;
+    opacity: 0; pointer-events: none; transition: opacity .22s ease; }
+  body.nav-open .navscrim { opacity: 1; pointer-events: auto; }
+
+  /* Bottom navigation bar (mobile only) */
+  .bottomnav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 800;
+    background: var(--navy); padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    box-shadow: 0 -2px 12px rgba(0,0,0,.2); }
+  .bottomnav a { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #c4cee4; text-decoration: none; padding: 8px 2px; min-height: 56px; font-size: 11px; }
+  .bottomnav a:active { background: var(--navy-soft); color: #fff; }
+  .bnav-ico { font-size: 20px; line-height: 1; margin-bottom: 3px; }
+  .bnav-txt { font-size: 11px; }
+
+  /* Stat cards: 1 per row */
+  .cards { grid-template-columns: 1fr; }
+  .card { padding: 16px; }
+
+  /* Tiles: 2 per row */
+  .tiles { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+  /* Forms: single column, 16px inputs prevent iOS zoom */
+  .formcard { padding: 18px 14px; }
+  .formcard input[type=text], .formcard input[type=date], .formcard input[type=file],
+  .formcard input[type=email], .formcard input[type=number], .formcard input[type=time],
+  .formcard select, .formcard textarea,
+  .authcard input[type=text], .authcard input[type=password] { font-size: 16px; padding: 12px; }
+  .btn { width: 100%; margin-bottom: 8px; }
+  .inlineform .btn { width: auto; margin-bottom: 0; }
+  .sidebar .btn, .filters .btn, .topbar .btn { width: auto; margin-bottom: 0; }
+
+  /* Tables scroll horizontally instead of breaking */
+  .tbl th, .tbl td { padding: 10px 10px; font-size: 13px; white-space: nowrap; }
+  .tbl td.wrap, .tbl th.wrap { white-space: normal; }
+
+  /* Key-value definition lists stack */
+  .kv { grid-template-columns: 1fr; gap: 2px 0; }
+  .kv dt { margin-top: 8px; }
+
+  .authcard { padding: 26px 20px; }
+  .evalinputs { grid-template-columns: 1fr; }
+  .cal td { height: 52px; }
+  .daynum { font-size: 12px; }
+}
+
+/* ================= Tablet / small desktop tweaks ================= */
+@media (min-width: 861px) and (max-width: 1100px) {
+  .cards { grid-template-columns: repeat(2, 1fr); }
+  .content { padding: 20px; }
+}

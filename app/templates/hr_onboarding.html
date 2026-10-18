@@ -13,7 +13,7 @@
     <button class="btn primary" type="submit">Create Case</button>
   </form>
 </div>
-<table class="tbl">
+<div class="tbl-wrap"><table class="tbl">
   <tr><th>Name</th><th>Joining Date</th><th>Employee ID</th><th>Progress</th><th></th></tr>
   {% for c in cases %}
   <tr>
@@ -22,5 +22,5 @@
     <td><a class="btn small" href="{{ url_for('hrms.onboarding_case', oid=c.id) }}">Open</a></td>
   </tr>
   {% else %}<tr><td colspan="5" class="muted">No onboarding cases yet.</td></tr>{% endfor %}
-</table>
+</table></div>
 {% endblock %}

@@ -12,6 +12,7 @@ from app.models import (User, LeaveBalance, LeaveRequest, AttendanceRecord,
                         ONBOARDING_CHECKLIST_ITEMS)
 from app.audit import record, audit_model_changes, snapshot
 from app.views import manager_required  # noqa: F401
+import config as app_config
 
 hrms_bp = Blueprint("hrms", __name__, url_prefix="/hrms")
 
@@ -30,7 +31,9 @@ def admin_required(fn):
 EMPLOYEE_FIELDS = ["name", "department", "designation", "reporting_manager",
                    "joining_date", "employment_status", "nationality",
                    "visa_expiry_date", "passport_expiry_date",
-                   "email", "mobile", "basic_salary", "monthly_salary"]
+                   "emirates_id_expiry_date",
+                   "email", "mobile", "iban", "bank_name",
+                   "basic_salary", "monthly_salary"]
 
 EMPLOYMENT_STATUSES = ["active", "probation", "resigned", "terminated", "retired"]
 
@@ -52,7 +55,9 @@ def get_upcoming_expiries(days=30, limit=50):
     out = []
     users = User.query.filter(User.is_active.is_(True)).all()
     for u in users:
-        for doc, d in (("visa", u.visa_expiry_date), ("passport", u.passport_expiry_date)):
+        docs = (("visa", u.visa_expiry_date), ("passport", u.passport_expiry_date),
+                ("emirates id", u.emirates_id_expiry_date))
+        for doc, d in docs:
             if d and today - timedelta(days=30) <= d <= cutoff:
                 out.append({"user": u, "doc": doc, "date": d,
                             "days_left": (d - today).days})
@@ -106,8 +111,11 @@ def employee_new():
                         nationality=(request.form.get("nationality") or "").strip() or None,
                         visa_expiry_date=parse_date(request.form.get("visa_expiry_date")),
                         passport_expiry_date=parse_date(request.form.get("passport_expiry_date")),
+                        emirates_id_expiry_date=parse_date(request.form.get("emirates_id_expiry_date")),
                         email=(request.form.get("email") or "").strip() or None,
                         mobile=(request.form.get("mobile") or "").strip() or None,
+                        iban=(request.form.get("iban") or "").strip().upper() or None,
+                        bank_name=(request.form.get("bank_name") or "").strip() or None,
                         basic_salary=float(request.form.get("basic_salary") or 0),
                         monthly_salary=float(request.form.get("monthly_salary") or 0))
             # Initial password must be set by HR separately (never a guessable default).
@@ -171,8 +179,11 @@ def employee_edit(uid):
         user.nationality = (request.form.get("nationality") or "").strip() or None
         user.visa_expiry_date = parse_date(request.form.get("visa_expiry_date"))
         user.passport_expiry_date = parse_date(request.form.get("passport_expiry_date"))
+        user.emirates_id_expiry_date = parse_date(request.form.get("emirates_id_expiry_date"))
         user.email = (request.form.get("email") or "").strip() or None
         user.mobile = (request.form.get("mobile") or "").strip() or None
+        user.iban = (request.form.get("iban") or "").strip().upper() or None
+        user.bank_name = (request.form.get("bank_name") or "").strip() or None
         try:
             user.basic_salary = float(request.form.get("basic_salary") or 0)
             user.monthly_salary = float(request.form.get("monthly_salary") or 0)
@@ -302,3 +313,126 @@ def onboarding_case(oid):
         flash(f"'{t.label}' marked {'done' if t.is_done else 'pending'}.", "success")
         return redirect(url_for("hrms.onboarding_case", oid=oid))
     return render_template("hr_onboarding_case.html", case=case)
+
+
+# ---------------- UAE Compliance Dashboard ----------------
+@hrms_bp.route("/compliance")
+@login_required
+@admin_required
+def compliance():
+    """HR-admin UAE compliance overview (v2.1)."""
+    from app.uae import gratuity, probation_end_date, WORKING_HOURS_NOTES
+    today = date.today()
+    # (a) Document expiries within 60 days: visa, passport, Emirates ID.
+    expiries = get_upcoming_expiries(days=60, limit=200)
+    # (b) Probation endings within 30 days.
+    probation = []
+    for u in User.query.filter(User.is_active.is_(True)).all():
+        pend = probation_end_date(u.joining_date)
+        if pend and today <= pend <= today + timedelta(days=30):
+            probation.append({"user": u, "end": pend,
+                              "days_left": (pend - today).days})
+    probation.sort(key=lambda r: r["days_left"])
+    # (c) Total gratuity liability estimate (employer-termination basis, today).
+    liability = 0.0
+    liability_count = 0
+    for u in User.query.filter(User.is_active.is_(True)).all():
+        if u.joining_date and (u.basic_salary or 0) > 0:
+            g = gratuity(u.joining_date, today, u.basic_salary, "employer")
+            liability += g["amount"]
+            liability_count += 1
+    return render_template("hr_compliance.html",
+                           expiries=expiries, probation=probation,
+                           liability=round(liability, 2),
+                           liability_count=liability_count,
+                           today=today,
+                           leave_types=app_config.LEAVE_TYPES,
+                           hours_notes=WORKING_HOURS_NOTES)
+
+
+# ---------------- End-of-Service Gratuity Calculator (HR admin) ----------------
+@hrms_bp.route("/gratuity", methods=["GET", "POST"])
+@login_required
+@admin_required
+def gratuity_calc():
+    """End-of-service gratuity calculator for any employee or manual values."""
+    from app.uae import gratuity
+    result = None
+    form = {"employee_id": "", "basic": "", "join": "", "last": "",
+            "separation": "employer"}
+    employees = User.query.filter(User.is_active.is_(True))\
+        .order_by(User.name).all()
+    if request.method == "POST":
+        form["employee_id"] = (request.form.get("employee_id") or "").strip()
+        form["basic"] = (request.form.get("basic") or "").strip()
+        form["join"] = (request.form.get("join") or "").strip()
+        form["last"] = (request.form.get("last") or "").strip()
+        form["separation"] = request.form.get("separation") or "employer"
+        join, last, basic, who = None, None, 0.0, None
+        emp = User.query.get(form["employee_id"]) if form["employee_id"] else None
+        if emp:
+            join = emp.joining_date
+            last = date.today()
+            basic = emp.basic_salary or 0.0
+            who = f"{emp.name} ({emp.id})"
+        else:
+            join = parse_date(form["join"])
+            last = parse_date(form["last"]) or date.today()
+            try:
+                basic = float(form["basic"] or 0)
+            except ValueError:
+                basic = 0.0
+            who = "Manual entry"
+        if not join:
+            flash("Joining date is required.", "error")
+        elif not basic or basic <= 0:
+            flash("A basic salary above zero is required.", "error")
+        else:
+            result = gratuity(join, last, basic, form["separation"])
+            result["who"] = who
+            result["basic"] = round(basic, 2)
+            result["last_working"] = last
+            record("gratuity_calculated",
+                   f"{who}: AED {result['amount']} ({form['separation']})",
+                   entity="employee",
+                   entity_id=form["employee_id"] or "manual")
+            db.session.commit()
+    return render_template("hr_gratuity.html", result=result, form=form,
+                           employees=employees)
+
+
+# ---------------- WPS Payroll Export (HR admin) ----------------
+@hrms_bp.route("/wps/export")
+@login_required
+@admin_required
+def wps_export():
+    """Download a WPS payroll CSV for active employees.
+
+    This is the CSV working input for your bank / WPS agent - it is NOT an
+    official MOHRE .sif file. The formal .sif must be generated through the
+    employer's WPS agent/bank format.
+    """
+    import csv
+    import io
+    from flask import Response
+    rows = User.query.filter(User.is_active.is_(True)).order_by(User.name).all()
+    out = io.StringIO()
+    writer = csv.writer(out)
+    writer.writerow(["Employee ID", "Name", "Bank IBAN", "Bank Name",
+                     "Basic Salary (AED)", "Monthly Salary (AED)",
+                     "Fixed (AED)", "Variable (AED)"])
+    count = 0
+    for u in rows:
+        basic = u.basic_salary or 0.0
+        monthly = u.monthly_salary or 0.0
+        variable = max(monthly - basic, 0.0)
+        writer.writerow([u.id, u.name, u.iban or "", u.bank_name or "",
+                         f"{basic:.2f}", f"{monthly:.2f}",
+                         f"{basic:.2f}", f"{variable:.2f}"])
+        count += 1
+    record("wps_export", f"WPS CSV downloaded for {count} active employees",
+           entity="payroll", entity_id="wps")
+    db.session.commit()
+    filename = f"wps-payroll-{date.today().strftime('%Y%m')}.csv"
+    return Response(out.getvalue(), mimetype="text/csv",
+                    headers={"Content-Disposition": f"attachment; filename={filename}"})

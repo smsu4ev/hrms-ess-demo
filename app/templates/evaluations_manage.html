@@ -5,15 +5,15 @@
 <p><a class="btn" href="{{ url_for('views.evaluations_manage') }}">New evaluation</a></p>
 <p class="muted">Select an employee to evaluate.</p>
 <h3>Employees</h3>
-<table class="tbl">
+<div class="tbl-wrap"><table class="tbl">
   <tr><th>ID</th><th>Name</th><th>Department</th><th></th></tr>
   {% for u in employees %}
   <tr><td>{{ u.id }}</td><td>{{ u.name }}</td><td>{{ u.department }}</td>
       <td><a class="btn small" href="{{ url_for('views.evaluation_new', uid=u.id) }}">Evaluate</a></td></tr>
   {% endfor %}
-</table>
+</table></div>
 <h3>Recent Evaluations</h3>
-<table class="tbl">
+<div class="tbl-wrap"><table class="tbl">
   <tr><th>Employee</th><th>Period</th><th>Overall</th><th>Evaluator</th><th>Date</th></tr>
   {% for e in recent %}
   {% set u = users.get(e.user_id) %}{% set ev = users.get(e.evaluator_id) %}
@@ -22,5 +22,5 @@
   {% else %}
   <tr><td colspan="5" class="muted">None yet.</td></tr>
   {% endfor %}
-</table>
+</table></div>
 {% endblock %}

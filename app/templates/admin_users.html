@@ -6,7 +6,7 @@
   <input type="text" name="q" placeholder="Search ID, name, dept..." value="{{ q }}" size="30">
   <button class="btn small" type="submit">Search</button>
 </form>
-<table class="tbl">
+<div class="tbl-wrap"><table class="tbl">
   <tr><th>ID</th><th>Name</th><th>Department</th><th>Role</th><th>Active</th><th>Must change PW</th><th></th></tr>
   {% for u in users %}
   <tr>
@@ -19,5 +19,5 @@
   {% else %}
   <tr><td colspan="7" class="muted">No users found.</td></tr>
   {% endfor %}
-</table>
+</table></div>
 {% endblock %}

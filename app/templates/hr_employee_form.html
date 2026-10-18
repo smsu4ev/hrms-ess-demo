@@ -31,8 +31,11 @@
   <label>Nationality <input type="text" name="nationality" value="{{ user.nationality if user }}"></label>
   <label>Visa Expiry Date <input type="date" name="visa_expiry_date" value="{{ user.visa_expiry_date if user and user.visa_expiry_date }}"></label>
   <label>Passport Expiry Date <input type="date" name="passport_expiry_date" value="{{ user.passport_expiry_date if user and user.passport_expiry_date }}"></label>
+  <label>Emirates ID Expiry Date <input type="date" name="emirates_id_expiry_date" value="{{ user.emirates_id_expiry_date if user and user.emirates_id_expiry_date }}"></label>
   <label>Email <input type="email" name="email" value="{{ user.email if user }}"></label>
   <label>Mobile <input type="text" name="mobile" value="{{ user.mobile if user }}"></label>
+  <label>Bank IBAN (WPS) <input type="text" name="iban" value="{{ user.iban if user }}" placeholder="AE07..." maxlength="34"></label>
+  <label>Bank Name <input type="text" name="bank_name" value="{{ user.bank_name if user }}"></label>
   <label>Basic Salary <input type="number" step="0.01" name="basic_salary" value="{{ user.basic_salary if user else 0 }}"></label>
   <label>Monthly Salary <input type="number" step="0.01" name="monthly_salary" value="{{ user.monthly_salary if user else 0 }}"></label>
   <button class="btn primary" type="submit">{% if user %}Save Changes{% else %}Create Employee{% endif %}</button>

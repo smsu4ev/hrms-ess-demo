@@ -17,7 +17,7 @@
 </div>
 
 <h3>My Requests</h3>
-<table class="tbl">
+<div class="tbl-wrap"><table class="tbl">
   <tr><th>Date</th><th>Corrected In</th><th>Corrected Out</th><th>Reason</th><th>Status</th><th>Decision</th></tr>
   {% for r in items %}
   <tr>
@@ -26,5 +26,5 @@
     <td>{{ r.approver_comment or '-' }}</td>
   </tr>
   {% else %}<tr><td colspan="6" class="muted">No requests yet.</td></tr>{% endfor %}
-</table>
+</table></div>
 {% endblock %}

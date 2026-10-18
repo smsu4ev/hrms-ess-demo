@@ -74,6 +74,23 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        # Lightweight idempotent migration for columns added after the
+        # original schema was created (e.g. v2.1 UAE fields). create_all()
+        # does not add columns to existing tables, so upgrade them here.
+        try:
+            from sqlalchemy import inspect, text
+            cols = {c["name"] for c in inspect(db.engine).get_columns("users")}
+            for col, ddl in [
+                ("emirates_id_expiry_date", "DATE"),
+                ("iban", "VARCHAR(60)"),
+                ("bank_name", "VARCHAR(80)"),
+            ]:
+                if col not in cols:
+                    db.session.execute(text(f"ALTER TABLE users ADD COLUMN {col} {ddl}"))
+            db.session.commit()
+        except Exception:
+            app.logger.exception("Column migration failed")
+            db.session.rollback()
         # Free-sample mode only: auto-create fake demo users on startup
         # (hosts like Render free have no shell to run seed_demo.py).
         if os.environ.get("ESS_SEED_DEMO") == "1":
