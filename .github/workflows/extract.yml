@@ -1,9 +1,6 @@
 name: Extract app zip to root
 
-on:
-  push:
-    paths:
-      - hrms-ess-v2.zip
+on: push
 
 permissions:
   contents: write
